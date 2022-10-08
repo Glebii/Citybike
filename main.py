@@ -1,8 +1,12 @@
 import pandas as pd
-from distance_calculator import getDistanceBetweenPoints
+import matplotlib
 import seaborn as sns
 import datetime
-import numpy as np
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+
+from distance_calculator import getDistanceBetweenPoints
+
 
 
 def main():
@@ -15,7 +19,7 @@ def main():
     getDistanceAccordingToGender(data)
     getTop5MostUsedStations(data)
     getTop5MostUsedBikes(data)
-
+    dependenceOfDurationOfRideOnAgeAndGender(data)
 
 
 def getDistanceAccordingToGender(data):
@@ -46,12 +50,30 @@ def getTop5MostUsedStations(data):
 
 def getTop5MostUsedBikes(data):
     print(
-        data[['Trip Duration', 'Bike ID']].groupby(['Bike ID']).count().reset_index().sort_values(by=['Trip Duration']).tail().iloc[::-1]
+        data[['Trip Duration', 'Bike ID']].groupby(['Bike ID']).count().reset_index().sort_values(
+            by=['Trip Duration']).tail().iloc[::-1]
     )
 
 
 def dependenceOfDurationOfRideOnAgeAndGender(data):
-    pass
+    data['Birth Year'] = data['Birth Year'].fillna(0).astype(int)
+    current_year = datetime.date.today().year
+    data['Age'] = current_year - data['Birth Year']
+    data['Age'].where(~(data['Age'] == 2022), other=0, inplace=True)
+
+    illustration_so = data[['Trip Duration', 'Age', 'Gender']].groupby(['Age', 'Gender']).mean()
+    print(illustration_so)
+    # sns.barplot(data=illustration_so)
+    # plt.show()
+
+    # sns.Plot(illustration['Age', 'Gender'], illustration['Trip Duration']).add(sns.Bar())
+
+    # print(data.loc[(data['Age'] == 0) & (data['Gender'] == 'Man')])
+
+    # data['Age'] = filteredDates['Birth Year']
+    # print(data)
+
+
 def set_pandas_display_options() -> None:
     display = pd.options.display
     display.max_columns = 100
