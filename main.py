@@ -1,12 +1,13 @@
 import pandas as pd
 import matplotlib
 import seaborn as sns
-import datetime
+import datetime as dt
+
+
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 
 from distance_calculator import getDistanceBetweenPoints
-
 
 
 def main():
@@ -19,7 +20,8 @@ def main():
     getDistanceAccordingToGender(data)
     getTop5MostUsedStations(data)
     getTop5MostUsedBikes(data)
-    dependenceOfDurationOfRideOnAgeAndGender(data)
+    # dependenceOfDurationOfRideOnAgeAndGender(data)
+    getStationsWithNumberOfVisitsFrom8to18(data)
 
 
 def getDistanceAccordingToGender(data):
@@ -57,18 +59,27 @@ def getTop5MostUsedBikes(data):
 
 def dependenceOfDurationOfRideOnAgeAndGender(data):
     data['Birth Year'] = data['Birth Year'].fillna(0).astype(int)
-    current_year = datetime.date.today().year
+    current_year = dt.date.today().year
     data['Age'] = current_year - data['Birth Year']
     data['Age'].where(~(data['Age'] == 2022), other=0, inplace=True)
 
-    illustration_so = data[['Trip Duration', 'Age', 'Gender']].groupby(['Age', 'Gender']).mean()
-    print(illustration_so)
-    # sns.barplot(data=illustration_so)
-    # plt.show()
+    grouped_data = data[['Trip Duration', 'Age', 'Gender']].groupby(['Age', 'Gender']).mean().reset_index()
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.set(title='The average value of the duration of the trip depending on age and gender')
+    ill = sns.barplot(data=grouped_data, x=grouped_data['Age'], y=grouped_data['Trip Duration'],
+                      hue=grouped_data['Gender'], width=1
+                      , saturation=1, palette='rocket_r')
+    plt.show()
+
+
+def  do_men_and_women_prefer_different_directions(data):
+
+
 
     # sns.Plot(illustration['Age', 'Gender'], illustration['Trip Duration']).add(sns.Bar())
 
-    # print(data.loc[(data['Age'] == 0) & (data['Gender'] == 'Man')])
+    # print(data.loc[(data['Age'] == 0) & (data['Gender'] == 'Unknown gender')])
 
     # data['Age'] = filteredDates['Birth Year']
     # print(data)
