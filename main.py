@@ -20,8 +20,8 @@ def main():
     getDistanceAccordingToGender(data)
     getTop5MostUsedStations(data)
     getTop5MostUsedBikes(data)
-    # dependenceOfDurationOfRideOnAgeAndGender(data)
-    getStationsWithNumberOfVisitsFrom8to18(data)
+    dependenceOfDurationOfRideOnAgeAndGender(data)
+    do_men_and_women_prefer_different_directions(data)
 
 
 def getDistanceAccordingToGender(data):
@@ -74,17 +74,12 @@ def dependenceOfDurationOfRideOnAgeAndGender(data):
 
 
 def  do_men_and_women_prefer_different_directions(data):
-
-
-
-    # sns.Plot(illustration['Age', 'Gender'], illustration['Trip Duration']).add(sns.Bar())
-
-    # print(data.loc[(data['Age'] == 0) & (data['Gender'] == 'Unknown gender')])
-
-    # data['Age'] = filteredDates['Birth Year']
-    # print(data)
-
-
+    grouped_data = data[['End Station Latitude', 'End Station Longitude','Gender']].groupby(['Gender','End Station Latitude', 'End Station Longitude']).all().reset_index().drop([0])
+    grouped_data = grouped_data.loc[grouped_data['Gender'] != 'Unknown gender']
+    print(grouped_data)
+    sns.set_color_codes()
+    sns.scatterplot(data=grouped_data,x=grouped_data['End Station Latitude'],y=grouped_data['End Station Longitude'],hue=grouped_data['Gender'],palette=['b','r'],style=grouped_data['Gender'])
+    plt.show()
 def set_pandas_display_options() -> None:
     display = pd.options.display
     display.max_columns = 100
